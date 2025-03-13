@@ -30,6 +30,7 @@ class MediationTimeGUI:
         
         if standalone:
             self.master.title("Arabuluculuk Süre Hesaplama")
+            self.master.geometry("1500x500") 
         
         # Main frame
         self.frame = ttk.Frame(self.master, padding="10")
@@ -40,7 +41,7 @@ class MediationTimeGUI:
         self.date_frame.pack(fill=tk.X, pady=5)
         
         ttk.Label(self.date_frame, text="Başlangıç Tarihi (GG.AA.YYYY):").pack(side=tk.LEFT, padx=5)
-        self.date_entry = ttk.Entry(self.date_frame, width=15)
+        self.date_entry = ttk.Entry(self.date_frame, width=10)
         self.date_entry.pack(side=tk.LEFT, padx=5)
         self.date_entry.insert(0, datetime.now().strftime("%d.%m.%Y"))
         
@@ -61,13 +62,17 @@ class MediationTimeGUI:
         # Column headers
         for week in all_weeks:
             self.table.heading(f"{week}_week", text=f"{week}. Hafta")
-            self.table.column(f"{week}_week", width=100, anchor=tk.CENTER)
+            self.table.column(f"{week}_week", width=30, minwidth=30, anchor=tk.CENTER)
+            # Add heading for the first column (Dispute Type)
+            self.table.heading("#0", text="Uyuşmazlık Konusu")
+            self.table.column("#0", width=300, minwidth=150)
         
         # Scrollbars
         scrollbar_y = ttk.Scrollbar(self.table_frame, orient=tk.VERTICAL, command=self.table.yview)
         self.table.configure(yscrollcommand=scrollbar_y.set)
         
         # Place the table
+        self.table_frame.pack_propagate(False) # Prevent resizing
         self.table.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
         
@@ -75,7 +80,10 @@ class MediationTimeGUI:
         self.calculate()
         
         if standalone:
-            self.master.mainloop()
+            try:
+                self.master.mainloop()
+            except Exception as e:
+                print(f"GUI error: {e}")
             
     def get_frame(self) -> ttk.Frame:
         """Get the main frame for external applications

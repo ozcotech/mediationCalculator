@@ -17,7 +17,7 @@ try:
     from modules.core.medTime.gui import MediationTimeGUI
 except ImportError:
     import sys
-    sys.path.append("..")  # Üst dizini ekleyerek aramaya yardımcı olur
+    sys.path.append("..")  
     from calculator import MediationTimeCalculator
     from gui import MediationTimeGUI
 
