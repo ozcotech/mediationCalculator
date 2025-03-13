@@ -12,8 +12,14 @@ import tkinter as tk
 from tkinter import ttk
 
 # Import the MedTime module
-from modules.core.medTime.calculator import MediationTimeCalculator
-from modules.core.medTime.gui import MediationTimeGUI
+try:
+    from modules.core.medTime.calculator import MediationTimeCalculator
+    from modules.core.medTime.gui import MediationTimeGUI
+except ImportError:
+    import sys
+    sys.path.append("..")  # Üst dizini ekleyerek aramaya yardımcı olur
+    from calculator import MediationTimeCalculator
+    from gui import MediationTimeGUI
 
 def standalone_demo():
     """Run MedTime as a standalone application"""
