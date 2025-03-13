@@ -2,6 +2,10 @@
 
 Mediation Time Calculator (MedTime) is a Python application designed to help calculate mediation timeframes for various types of legal disputes. This program automatically calculates deadlines for different dispute types based on a start date.
 
+## Screenshot
+
+![Mediation Time Calculator Screenshot](screenshot_mediation_date.png)
+
 ## Features
 
 - Time calculations for various legal dispute types

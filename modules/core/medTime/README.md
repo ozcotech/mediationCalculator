@@ -2,6 +2,10 @@
 
 Arabuluculuk Süre Hesaplama (MedTime), farklı hukuki uyuşmazlık türleri için arabuluculuk sürelerini hesaplamaya yardımcı olan bir Python uygulamasıdır. Bu program, başlangıç tarihine göre çeşitli uyuşmazlık türleri için son tarihleri otomatik olarak hesaplar.
 
+## Ekran Görüntüsü
+
+![Arabuluculuk Süre Hesaplama Ekran Görüntüsü](screenshot_mediation_date.png)
+
 ## Özellikler
 
 - Çeşitli hukuki uyuşmazlık türleri için süre hesaplamaları
