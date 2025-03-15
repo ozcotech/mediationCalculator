@@ -1,3 +1,7 @@
+#:kivy 2.0.0
+# mediationtime.kv
+# KV file for the MediationTimeGUI component
+
 <MediationTimeGUI>:
     orientation: 'vertical'
     padding: dp(10)
@@ -5,6 +9,9 @@
     canvas.before:
         Color:
             rgba: 0.8, 0.9, 1, 1  # Light blue background
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
     # Main toolbar with date input and calculate button
     BoxLayout:
@@ -23,7 +30,7 @@
         
         TextInput:
             id: date_entry
-            text: ""  # Placeholder, will be updated dynamically
+            text: ""  # Placeholder, will be set to today's date in code
             multiline: False
             size_hint_x: 0.2
             size_hint_y: None
@@ -47,9 +54,17 @@
         Label:
             text: ""
             size_hint_x: 0.35
-            size_hint_y: None
-            height: dp(40)
+    
+    # Title of the table
+    Label:
+        text: "Arabuluculuk Süre Hesaplama Tablosu"
+        size_hint_y: None
+        height: dp(30)
+        font_size: dp(16)
+        bold: True
+        color: 0, 0, 0.6, 1  # Dark blue text
 
+    # Table container with scroll
     ScrollView:
         id: scroll_view
         do_scroll_x: True
@@ -63,56 +78,11 @@
             Rectangle:
                 pos: self.pos
                 size: self.size
-        height: table_layout.height  # Fix: Dynamically use GridLayout height
         
         GridLayout:
             id: table_layout
-            cols: 1  # Ensure proper column structure
-            size_hint_y: None
-            height: table_layout.height  # Fix: Dynamically use GridLayout height
-            width: self.width  # Fix: Dynamically adjust based on table width
-            spacing: dp(0)  # Ensuring no gaps between cells
-            padding: dp(0)  # Removed extra padding to align columns
-
-<CellLabel@Label>:
-    size_hint_y: None
-    height: dp(40)
-    size_hint_x: None
-    width: table_layout.width  # Use dynamic width based on table
-    text_size: self.size
-    halign: 'center'
-    valign: 'middle'
-    color: 0, 0, 0.6, 1  # Dark blue text color
-    canvas.before:
-        Color:
-            rgba: 0.85, 0.9, 1, 1  # Light blue cell background
-        Rectangle:
-            pos: self.pos
-            size: self.size
-        Color:
-            rgba: 1, 1, 1, 1  # White border
-        Line:
-            width: 1.2  # Thinner border
-            rectangle: self.x, self.y, self.width, self.height
-
-<DisputeLabel@Label>:
-    size_hint_y: None
-    height: dp(40)
-    size_hint_x: None
-    width: table_layout.width  # Adjusted width to match table dynamically
-    text_size: self.size
-    halign: 'left'
-    valign: 'middle'
-    padding_x: dp(10)
-    color: 0, 0, 0.6, 1  # Dark blue text color
-    canvas.before:
-        Color:
-            rgba: 0.75, 0.85, 1, 1  # Darker blue cell background
-        Rectangle:
-            pos: self.pos
-            size: self.size
-        Color:
-            rgba: 1, 1, 1, 1  # White border
-        Line:
-            width: 1.2  # Thinner border
-            rectangle: self.x, self.y, self.width, self.height
+            cols: 1  # Will be dynamically set in code
+            size_hint: None, None
+            size: self.minimum_size
+            spacing: dp(0)  # No gaps between cells
+            padding: dp(0)  # No padding
