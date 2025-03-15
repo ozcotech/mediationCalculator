@@ -1,6 +1,7 @@
 #:kivy 2.0.0
 # mediationtime.kv
 # KV file for the MediationTimeGUI component
+# This file is loaded by gui.py using pathlib: Path(__file__).parent / 'mediationtime.kv'
 
 <MediationTimeGUI>:
     orientation: 'vertical'
@@ -39,7 +40,7 @@
             color: 0, 0, 0.5, 1  # Dark blue text color
         
         TextInput:
-            id: date_entry
+            id: date_entry  # Referenced in Python via self.ids.date_entry
             text: ""  # Placeholder, will be set to today's date in code
             multiline: False
             size_hint_x: 0.2
@@ -59,11 +60,11 @@
             height: dp(30)
             background_color: 0.1, 0.5, 0.8, 1  # Blue button
             color: 1, 1, 1, 1  # White text
-            on_release: root.calculate()
+            on_release: root.calculate()  # Calls calculate() method in Python
         
         Label:
             text: ""
-            size_hint_x: 0.35
+            size_hint_x: 0.35  # Spacer label to balance layout
     
     # Table container with scroll
     ScrollView:
@@ -81,9 +82,9 @@
                 size: self.size
         
         GridLayout:
-            id: table_layout
-            cols: 1  # Will be dynamically set in code
-            size_hint: None, None
-            size: self.minimum_size
+            id: table_layout  # Referenced in Python via self.ids.table_layout
+            cols: 1  # Will be dynamically set in Python code to match weeks+1
+            size_hint: None, None  # Necessary for proper scrolling
+            size: self.minimum_size  # Size will adjust based on content
             spacing: dp(0)  # No gaps between cells
             padding: dp(0)  # No padding

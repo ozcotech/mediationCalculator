@@ -14,70 +14,65 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
-from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
 from kivy.core.window import Window
 from kivy.metrics import dp
-from kivy.properties import ObjectProperty
-from kivy.lang import Builder
 from kivy.clock import Clock
+from kivy.lang import Builder
 
 from datetime import datetime
-from typing import Optional, Dict, Any
+from pathlib import Path  # Import pathlib for modern path handling
+from typing import Optional, Dict
 
 from .calculator import MediationTimeCalculator
 
 # Import necessary classes for drawing
-from kivy.graphics import Color, Rectangle
+from kivy.graphics import Color, Rectangle, Line
 
-def add_border_to_widget(widget, color=(1, 1, 1, 1), line_width=1.5):  # Changed to white border
+
+def add_border_to_widget(widget, color=(1, 1, 1, 1), line_width=1.5):
     """Add a white border to any widget"""
-    from kivy.graphics import Color, Line
-
     # Function to ensure border is redrawn when widget changes
     def update_border(*args):
-        # Clear previous drawings
         widget.canvas.after.clear()
-        # Add new border
         with widget.canvas.after:
-            Color(*color)  # White border color
+            Color(*color)
             Line(rectangle=(widget.x, widget.y, widget.width, widget.height), width=line_width)
 
-    # This will be called when widget position or size changes
     widget.bind(pos=update_border, size=update_border)
-    
-    # Draw initial border
     update_border()
-    
     return widget
+
+
+# Load the KV file at module level using pathlib
+try:
+    kv_path = Path(__file__).parent / 'mediationtime.kv'
+    Builder.load_file(str(kv_path))  # Convert Path to string for Kivy compatibility
+except Exception as e:
+    print(f"Error loading KV file: {e}")
+
 
 class MediationTimeGUI(BoxLayout):
     """GUI class for mediation timeline calculations"""
     
-    date_entry = ObjectProperty(None)
-    table_layout = ObjectProperty(None)
-    target_dates: Optional[Dict[int, datetime]] = None  # Initialized as None to prevent errors
-    
     def __init__(self, **kwargs):
         """Initialize GUI components"""
-        # Load kv file
-        try:
-            import os
-            kv_path = os.path.join(os.path.dirname(__file__), 'mediationtime.kv')
-            Builder.load_file(kv_path)
-        except Exception as e:
-            print(f"Error loading KV file: {e}")
-            
+        # Initialize parent class first using the old-style call which is more reliable
+        BoxLayout.__init__(self, **kwargs)
+        
         # Initialize calculator
         self.calculator = MediationTimeCalculator()
         
-        # Initialize parent
-        super(MediationTimeGUI, self).__init__(**kwargs)
+        # Initialize other attributes
+        self.table_layout = None
+        self.data_cells = {}
+        self.target_dates = None
+        self.table_initialized = False
         
         # Setup table with a delay to ensure widgets are ready
         Clock.schedule_once(self._setup_table, 0.1)
         
         # Set the date entry to today's date immediately
-        self._set_today_date(None)
+        Clock.schedule_once(self._set_today_date, 0.1)
         
         # Perform an initial calculation on startup
         Clock.schedule_once(self.calculate, 0.3)
@@ -86,8 +81,8 @@ class MediationTimeGUI(BoxLayout):
         """Setup the table layout after the widget tree is constructed"""
         self.table_layout = self.ids.table_layout
 
-        # ✅ Ensure the table layout is only created once
-        if hasattr(self, "table_initialized") and self.table_initialized:
+        # Ensure the table layout is only created once
+        if self.table_initialized:
             return
 
         self.table_layout.clear_widgets()
@@ -120,7 +115,7 @@ class MediationTimeGUI(BoxLayout):
             self.table_layout.add_widget(header_week)
             self.week_headers.append(header_week)
 
-        # 🆕 Store cell references for direct updates
+        # Store cell references for direct updates
         self.data_cells = {}
 
         for dispute in self.calculator.get_dispute_types():
@@ -139,20 +134,20 @@ class MediationTimeGUI(BoxLayout):
 
             for week in self.calculator.get_all_weeks():
                 cell_label = Label(
-                    text="-",  # Changed from empty string to "-" for non-calculated cells
+                    text="-",
                     size_hint_x=None, width=dp(100),
                     size_hint_y=None, height=dp(40),
                     halign='center',
                     valign='middle',
-                    color=[0.5, 0.5, 0.5, 1]  # Set to grey for empty cells
+                    color=[0.5, 0.5, 0.5, 1]
                 )
                 add_border_to_widget(cell_label)
                 self.table_layout.add_widget(cell_label)
 
-                # 📌 Store cell reference using (dispute_name, week) as key
+                # Store cell reference using (dispute_name, week) as key
                 self.data_cells[(dispute.name, week)] = cell_label
 
-        # ✅ Ensure dates update properly
+        # Ensure dates update properly
         self.table_initialized = True
         Clock.schedule_once(lambda dt: self.update_table_dates(), 0.3)
 
@@ -176,7 +171,7 @@ class MediationTimeGUI(BoxLayout):
 
     def update_error_message(self, error_msg="Invalid date"):
         """Update table cells with error message"""
-        if not hasattr(self, "data_cells") or not self.data_cells:
+        if not self.data_cells:
             return
             
         for (dispute_name, week), cell_label in self.data_cells.items():
@@ -209,7 +204,7 @@ class MediationTimeGUI(BoxLayout):
         
         return date_str
     
-    def calculate(self, instance=None) -> None:
+    def calculate(self, instance=None):
         """Calculate mediation dates and update the table dynamically"""
         try:
             date_str = self.ids.date_entry.text.strip()
@@ -227,7 +222,7 @@ class MediationTimeGUI(BoxLayout):
             # Calculate dates and store in `self.target_dates`
             self.target_dates = self.calculator.calculate_dates(start_date)
 
-            # ✅ Only update date values instead of recreating the entire table
+            # Only update date values instead of recreating the entire table
             self.update_table_dates()
 
         except ValueError as e:
