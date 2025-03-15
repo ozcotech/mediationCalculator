@@ -20,7 +20,7 @@ try:
     from modules.core.medTime.calculator import MediationTimeCalculator
     from modules.core.medTime.gui import MediationTimeGUI
 except ImportError as e:
-    print("\n🚨 Error loading MedTime modules! 🚨")
+    print("\nError loading MedTime modules!")
     print(f"Reason: {e}")
     print("Make sure you are running the script from the correct directory.")
     print("Try running: `python3 -m modules.core.medTime.demo`\n")
@@ -42,7 +42,7 @@ def standalone_demo():
         print(f"\n⚠️ Unexpected Error: {e}")
         print("The application encountered an issue and needs to close.\n")
     finally:
-        print("\n🛑 MediationTimeApp has exited. 🛑")
+        print("\nMediationTimeApp has exited.")
 
 def embedded_demo():
     """Demonstrate how to embed MedTime in another application"""
@@ -79,7 +79,7 @@ def embedded_demo():
         print(f"\n⚠️ Unexpected Error: {e}")
         print("The application encountered an issue and needs to close.\n")
     finally:
-        print("\n🛑 Embedded MediationTimeApp has exited. 🛑")
+        print("\nEmbedded MediationTimeApp has exited.")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--embedded":
