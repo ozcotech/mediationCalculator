@@ -7,8 +7,11 @@ Arabuluculuk Süre Hesaplama (MedTime), farklı hukuki uyuşmazlık türleri iç
 Başlangıçta, uygulama **Tkinter** kullanılarak geliştirilmiştir. Ancak, daha modern ve esnek bir kullanıcı arayüzü sağlamak amacıyla proje **Kivy'ye** geçiş yapmıştır. **Tkinter dosyaları silinmiş** ve **Kivy tabanlı güncellemeler** yapılmıştır.
 
 ## Ekran Görüntüsü
-
+En Yeni:
+![Arabuluculuk Süre Hesaplama Ekran Görüntüsü](screenshot_mediation_date_new_tr.png)
+Yeni:
 ![Arabuluculuk Süre Hesaplama Ekran Görüntüsü](screenshot_mediation_date_new.png)
+Eski:
 ![Arabuluculuk Süre Hesaplama Ekran Görüntüsü](screenshot_mediation_date.png)
 
 ## Özellikler
