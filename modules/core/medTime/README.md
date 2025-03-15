@@ -8,6 +8,7 @@ Başlangıçta, uygulama **Tkinter** kullanılarak geliştirilmiştir. Ancak, da
 
 ## Ekran Görüntüsü
 
+![Arabuluculuk Süre Hesaplama Ekran Görüntüsü](screenshot_mediation_date_new.png)
 ![Arabuluculuk Süre Hesaplama Ekran Görüntüsü](screenshot_mediation_date.png)
 
 ## Özellikler

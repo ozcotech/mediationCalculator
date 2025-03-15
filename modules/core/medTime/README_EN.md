@@ -8,6 +8,7 @@ Initially, the application was developed using **Tkinter** for the graphical use
 
 ## Screenshot
 
+![Mediation Time Calculator Screenshot](screenshot_mediation_date_new.png)
 ![Mediation Time Calculator Screenshot](screenshot_mediation_date.png)
 
 ## Features
