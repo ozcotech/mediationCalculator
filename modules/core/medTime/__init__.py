@@ -8,6 +8,6 @@ This module handles timeline calculations for mediation procedures.
 """
 
 from .calculator import MediationTimeCalculator
-from .gui import MediationTimeGUI
+from .gui import MediationTimeGUI, MediationTimeApp
 
-__all__ = ['MediationTimeCalculator', 'MediationTimeGUI']
+__all__ = ['MediationTimeCalculator', 'MediationTimeGUI', 'MediationTimeApp']

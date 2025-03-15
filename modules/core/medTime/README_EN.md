@@ -2,6 +2,10 @@
 
 Mediation Time Calculator (MedTime) is a Python application designed to help calculate mediation timeframes for various types of legal disputes. This program automatically calculates deadlines for different dispute types based on a start date.
 
+## Transition Information
+
+Initially, the application was developed using **Tkinter** for the graphical user interface. However, the project has transitioned to **Kivy** for a more modern and flexible user interface. **Tkinter-related files have been removed**, and the project has been **updated to use Kivy**.
+
 ## Screenshot
 
 ![Mediation Time Calculator Screenshot](screenshot_mediation_date.png)
@@ -28,7 +32,11 @@ Mediation Time Calculator (MedTime) is a Python application designed to help cal
 
 1. Download and install Python 3.x from the [official Python website](https://www.python.org/downloads/).
 2. Clone or download this repository.
-3. The only dependency required is tkinter, which typically comes bundled with Python.
+3. The only dependency required is **Kivy**, which can be installed using the following command:
+
+```bash
+pip install kivy
+```
 
 ## Usage
 
@@ -52,7 +60,7 @@ python demo.py --embedded
 
 - `__init__.py`: Module definition and exports.
 - `calculator.py`: Main class containing time calculation logic.
-- `gui.py`: Tkinter-based user interface components.
+- `gui.py`: Kivy-based user interface components.
 - `demo.py`: Example code demonstrating application usage.
 
 ## How It Works

@@ -7,128 +7,250 @@ MedTime GUI - User interface for timeline calculations
 This module provides the graphical user interface for mediation timeline calculations.
 """
 
-import tkinter as tk
-from tkinter import ttk
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
+from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelItem
+from kivy.core.window import Window
+from kivy.metrics import dp
+from kivy.properties import ObjectProperty
+from kivy.lang import Builder
+from kivy.clock import Clock
+
 from datetime import datetime
 from typing import Optional, Dict, Any
 
 from .calculator import MediationTimeCalculator
 
+# Import necessary classes for drawing
+from kivy.graphics import Color, Rectangle
 
-class MediationTimeGUI:
+def add_border_to_widget(widget, color=(1, 1, 1, 1), line_width=1.5):  # Changed to white border
+    """Add a white border to any widget"""
+    from kivy.graphics import Color, Line
+
+    # Function to ensure border is redrawn when widget changes
+    def update_border(*args):
+        # Clear previous drawings
+        widget.canvas.after.clear()
+        # Add new border
+        with widget.canvas.after:
+            Color(*color)  # White border color
+            Line(rectangle=(widget.x, widget.y, widget.width, widget.height), width=line_width)
+
+    # This will be called when widget position or size changes
+    widget.bind(pos=update_border, size=update_border)
+    
+    # Draw initial border
+    update_border()
+    
+    return widget
+
+class MediationTimeGUI(BoxLayout):
     """GUI class for mediation timeline calculations"""
     
-    def __init__(self, master=None, standalone=True):
-        """Initialize GUI components
-        
-        Args:
-            master: Parent window if embedded in another application
-            standalone: Whether this GUI should run as a standalone application
-        """
-        self.calculator = MediationTimeCalculator()
-        self.master = master or tk.Tk()
-        
-        if standalone:
-            self.master.title("Arabuluculuk Süre Hesaplama")
-            self.master.geometry("1500x500") 
-        
-        # Main frame
-        self.frame = ttk.Frame(self.master, padding="10")
-        self.frame.pack(fill=tk.BOTH, expand=True)
-        
-        # Date input field and calculate button
-        self.date_frame = ttk.Frame(self.frame)
-        self.date_frame.pack(fill=tk.X, pady=5)
-        
-        ttk.Label(self.date_frame, text="Başlangıç Tarihi (GG.AA.YYYY):").pack(side=tk.LEFT, padx=5)
-        self.date_entry = ttk.Entry(self.date_frame, width=10)
-        self.date_entry.pack(side=tk.LEFT, padx=5)
-        self.date_entry.insert(0, datetime.now().strftime("%d.%m.%Y"))
-        
-        ttk.Button(self.date_frame, text="Hesapla", command=self.calculate).pack(side=tk.LEFT, padx=5)
-        
-        # Results table
-        self.table_frame = ttk.Frame(self.frame)
-        self.table_frame.pack(fill=tk.BOTH, expand=True, pady=10)
-        
-        # Table headers
-        dispute_types = self.calculator.get_dispute_types()
-        all_weeks = self.calculator.get_all_weeks()
-        week_columns = [f"{week}_week" for week in all_weeks]
-        
-        self.table = ttk.Treeview(self.table_frame, columns=week_columns, 
-                           show="tree headings", height=len(dispute_types))
-        
-        # Column headers
-        for week in all_weeks:
-            self.table.heading(f"{week}_week", text=f"{week}. Hafta")
-            self.table.column(f"{week}_week", width=30, minwidth=30, anchor=tk.CENTER)
-            # Add heading for the first column (Dispute Type)
-            self.table.heading("#0", text="Uyuşmazlık Konusu")
-            self.table.column("#0", width=300, minwidth=150)
-        
-        # Scrollbars
-        scrollbar_y = ttk.Scrollbar(self.table_frame, orient=tk.VERTICAL, command=self.table.yview)
-        self.table.configure(yscrollcommand=scrollbar_y.set)
-        
-        # Place the table
-        self.table_frame.pack_propagate(False) # Prevent resizing
-        self.table.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-        
-        # Calculate automatically on startup
-        self.calculate()
-        
-        if standalone:
-            try:
-                self.master.mainloop()
-            except Exception as e:
-                print(f"GUI error: {e}")
-            
-    def get_frame(self) -> ttk.Frame:
-        """Get the main frame for external applications
-        
-        Returns:
-            ttk.Frame: The main frame of this GUI
-        """
-        return self.frame
-            
-    def calculate(self) -> None:
-        """Get date from the interface, calculate timelines and update the table"""
-        # Clear the table
-        for item in self.table.get_children():
-            self.table.delete(item)
-            
+    date_entry = ObjectProperty(None)
+    table_layout = ObjectProperty(None)
+    target_dates: Optional[Dict[int, datetime]] = None  # Initialized as None to prevent errors
+    
+    def __init__(self, **kwargs):
+        """Initialize GUI components"""
+        # Load kv file
         try:
+            import os
+            kv_path = os.path.join(os.path.dirname(__file__), 'mediationtime.kv')
+            Builder.load_file(kv_path)
+        except Exception as e:
+            print(f"Error loading KV file: {e}")
+            
+        # Initialize calculator
+        self.calculator = MediationTimeCalculator()
+        
+        # Initialize parent
+        super(MediationTimeGUI, self).__init__(**kwargs)
+        
+        # Setup table with a delay to ensure widgets are ready
+        Clock.schedule_once(self._setup_table, 0.1)
+        
+        # Set the date entry to today's date immediately
+        self._set_today_date(None)
+        
+        # Perform an initial calculation on startup
+        Clock.schedule_once(self.calculate, 0.3)
+        
+    def _setup_table(self, dt):
+        """Setup the table layout after the widget tree is constructed"""
+        self.table_layout = self.ids.table_layout
+
+        # ✅ Ensure the table layout is only created once
+        if hasattr(self, "table_initialized") and self.table_initialized:
+            return
+
+        self.table_layout.clear_widgets()
+        self.table_layout.cols = len(self.calculator.get_all_weeks()) + 1  
+
+        # Add table headers
+        header_dispute = Label(
+            text="Dispute Subject", 
+            size_hint_x=None, width=dp(400),  
+            size_hint_y=None, height=dp(40),
+            bold=True, halign='left',
+            valign='middle',
+            text_size=(dp(390), dp(40)),  
+            color=[0, 0, 0.6, 1]
+        )
+        add_border_to_widget(header_dispute)
+        self.table_layout.add_widget(header_dispute)
+
+        # Add week headers
+        self.week_headers = []
+        for week in self.calculator.get_all_weeks():
+            header_week = Label(
+                text=f"Week {week}", 
+                size_hint_x=None, width=dp(100),
+                size_hint_y=None, height=dp(40),
+                bold=True,
+                color=[0, 0, 0.6, 1]
+            )
+            add_border_to_widget(header_week)
+            self.table_layout.add_widget(header_week)
+            self.week_headers.append(header_week)
+
+        # 🆕 Store cell references for direct updates
+        self.data_cells = {}
+
+        for dispute in self.calculator.get_dispute_types():
+            dispute_label = Label(
+                text=dispute.name, 
+                size_hint_x=None, width=dp(400),
+                size_hint_y=None, height=dp(40),
+                halign='left',
+                valign='middle',
+                text_size=(dp(390), dp(40)),
+                padding_x=dp(10),
+                color=[0, 0, 0.6, 1]
+            )
+            add_border_to_widget(dispute_label)
+            self.table_layout.add_widget(dispute_label)
+
+            for week in self.calculator.get_all_weeks():
+                cell_label = Label(
+                    text="-",  # Changed from empty string to "-" for non-calculated cells
+                    size_hint_x=None, width=dp(100),
+                    size_hint_y=None, height=dp(40),
+                    halign='center',
+                    valign='middle',
+                    color=[0.5, 0.5, 0.5, 1]  # Set to grey for empty cells
+                )
+                add_border_to_widget(cell_label)
+                self.table_layout.add_widget(cell_label)
+
+                # 📌 Store cell reference using (dispute_name, week) as key
+                self.data_cells[(dispute.name, week)] = cell_label
+
+        # ✅ Ensure dates update properly
+        self.table_initialized = True
+        Clock.schedule_once(lambda dt: self.update_table_dates(), 0.3)
+
+    def update_table_dates(self, dt=None):
+        """Update only date values in existing table cells, clearing previous error messages."""
+        if not self.target_dates:
+            return
+        
+        for (dispute_name, week), cell_label in self.data_cells.items():
+            # Check if this cell should show a calculation based on dispute type and week
+            should_calculate = self.calculator.should_calculate(dispute_name, week)
+            
+            if should_calculate and week in self.target_dates:
+                # This is a cell that should be calculated
+                cell_label.text = self.target_dates[week].strftime("%d.%m.%Y")
+                cell_label.color = [0, 0.5, 0, 1]  # Dark green text color
+            else:
+                # This is a cell that should not be calculated
+                cell_label.text = "-"  # Show dash for non-calculated cells
+                cell_label.color = [0.5, 0.5, 0.5, 1]  # Gray color (non-calculated)
+
+    def update_error_message(self, error_msg="Invalid date"):
+        """Update table cells with error message"""
+        if not hasattr(self, "data_cells") or not self.data_cells:
+            return
+            
+        for (dispute_name, week), cell_label in self.data_cells.items():
+            # Only show error in cells that should be calculated
+            if self.calculator.should_calculate(dispute_name, week):
+                cell_label.text = error_msg
+                cell_label.color = [0.8, 0, 0, 1]  # Red text color for errors
+            else:
+                cell_label.text = "-"  # Non-calculated cells still show dash
+                cell_label.color = [0.5, 0.5, 0.5, 1]  # Gray color
+
+    def _set_today_date(self, dt):
+        """Set today's date in the date entry field"""
+        if hasattr(self, 'ids') and 'date_entry' in self.ids:
+            self.ids.date_entry.text = datetime.now().strftime("%d.%m.%Y")
+
+    def format_date_input(self, date_str):
+        """Format date input to handle different formats"""
+        # Check if string is empty
+        if not date_str or date_str.strip() == "":
+            # Return today's date as default
+            return datetime.now().strftime("%d.%m.%Y")
+            
+        # Remove any non-digit characters
+        digits_only = ''.join(filter(str.isdigit, date_str))
+        
+        # If we have 8 digits (DDMMYYYY), format it properly
+        if len(digits_only) == 8:
+            return f"{digits_only[:2]}.{digits_only[2:4]}.{digits_only[4:]}"
+        
+        return date_str
+    
+    def calculate(self, instance=None) -> None:
+        """Calculate mediation dates and update the table dynamically"""
+        try:
+            date_str = self.ids.date_entry.text.strip()
+
+            # If date is empty, use today's date
+            if not date_str:
+                date_str = datetime.now().strftime("%d.%m.%Y")
+
+            formatted_date = self.format_date_input(date_str)
+            self.ids.date_entry.text = formatted_date
+
             # Parse input date
-            date_str = self.date_entry.get()
-            start_date = datetime.strptime(date_str, "%d.%m.%Y")
-            
-            # Calculate dates
-            target_dates = self.calculator.calculate_dates(start_date)
-            
-            # Fill the table
-            for dispute in self.calculator.get_dispute_types():
-                # Prepare row values (for all week values)
-                row_values = {}
-                for week in self.calculator.get_all_weeks():
-                    if week in dispute.week_intervals:
-                        row_values[f"{week}_week"] = target_dates[week].strftime("%d.%m.%Y")
-                    else:
-                        row_values[f"{week}_week"] = "-"
-                
-                # Add row to the table
-                self.table.insert("", tk.END, text=dispute.name, values=[
-                    row_values[f"{week}_week"] for week in self.calculator.get_all_weeks()
-                ])
-                
-        except ValueError:
-            # Show error message for invalid date format
-            for dispute in self.calculator.get_dispute_types():
-                self.table.insert("", tk.END, text=dispute.name, 
-                                  values=["Hatalı tarih"] * len(self.calculator.get_all_weeks()))
-                                  
+            start_date = datetime.strptime(formatted_date, "%d.%m.%Y")
+
+            # Calculate dates and store in `self.target_dates`
+            self.target_dates = self.calculator.calculate_dates(start_date)
+
+            # ✅ Only update date values instead of recreating the entire table
+            self.update_table_dates()
+
+        except ValueError as e:
+            print(f"Date conversion error: {e}")
+            # Show error message for invalid date format in existing cells
+            self.update_error_message("Invalid date")
+
+        except Exception as e:
+            print(f"General error: {e}")
+            # Show general error message in existing cells
+            self.update_error_message(f"Error: {str(e)[:10]}")
+
+
+class MediationTimeApp(App):
+    """Standalone application class for the Mediation Time Calculator"""
+    
+    def build(self):
+        """Build the application"""
+        Window.size = (1200, 600)
+        Window.clearcolor = (0, 0, 0, 0)  # Completely transparent background
+        return MediationTimeGUI()
+
 
 # Standalone execution
 if __name__ == "__main__":
-    MediationTimeGUI()
+    MediationTimeApp().run()

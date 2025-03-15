@@ -2,6 +2,10 @@
 
 Arabuluculuk Süre Hesaplama (MedTime), farklı hukuki uyuşmazlık türleri için arabuluculuk sürelerini hesaplamaya yardımcı olan bir Python uygulamasıdır. Bu program, başlangıç tarihine göre çeşitli uyuşmazlık türleri için son tarihleri otomatik olarak hesaplar.
 
+## Geçiş Bilgisi
+
+Başlangıçta, uygulama **Tkinter** kullanılarak geliştirilmiştir. Ancak, daha modern ve esnek bir kullanıcı arayüzü sağlamak amacıyla proje **Kivy'ye** geçiş yapmıştır. **Tkinter dosyaları silinmiş** ve **Kivy tabanlı güncellemeler** yapılmıştır.
+
 ## Ekran Görüntüsü
 
 ![Arabuluculuk Süre Hesaplama Ekran Görüntüsü](screenshot_mediation_date.png)
@@ -28,7 +32,7 @@ Arabuluculuk Süre Hesaplama (MedTime), farklı hukuki uyuşmazlık türleri iç
 
 1. Python 3.x'i [Python'un resmi sitesinden](https://www.python.org/downloads/) indirin ve kurun.
 2. Bu repository'yi klonlayın veya indirin.
-3. Gerekli olan tek bağımlılık tkinter'dır, bu genellikle Python ile birlikte gelir.
+3. Gerekli olan bağımlılık Kivy'dir, bunu pip ile yükleyebilirsiniz.
 
 ## Kullanım
 
@@ -52,7 +56,7 @@ python demo.py --embedded
 
 - `__init__.py`: Modül tanımlaması ve dışa aktarma işlemleri.
 - `calculator.py`: Süre hesaplama mantığını içeren ana sınıf.
-- `gui.py`: Tkinter tabanlı kullanıcı arayüzü bileşenleri.
+- `kivy_gui.py`: Kivy tabanlı kullanıcı arayüzü bileşenleri.
 - `demo.py`: Uygulamanın kullanımını gösteren örnek kod.
 
 ## Nasıl Çalışır

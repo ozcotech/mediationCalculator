@@ -1,0 +1,118 @@
+<MediationTimeGUI>:
+    orientation: 'vertical'
+    padding: dp(10)
+    spacing: dp(10)
+    canvas.before:
+        Color:
+            rgba: 0.8, 0.9, 1, 1  # Light blue background
+
+    # Main toolbar with date input and calculate button
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: None
+        height: dp(40)
+        spacing: dp(10)
+        
+        Label:
+            text: "Görev Tarihi (GG.AA.YYYY):"
+            size_hint_x: 0.3
+            text_size: self.size
+            halign: 'right'
+            valign: 'middle'
+            color: 0, 0, 0.5, 1  # Dark blue text color
+        
+        TextInput:
+            id: date_entry
+            text: ""  # Placeholder, will be updated dynamically
+            multiline: False
+            size_hint_x: 0.2
+            size_hint_y: None
+            height: dp(30)
+            font_size: dp(14)
+            padding: [5, (self.height - self.line_height) / 2]
+            halign: 'center'
+            background_color: 1, 1, 1, 1  # White background
+            foreground_color: 0, 0, 0, 1  # Black text color
+            on_text_validate: root.calculate()  # Calculate when Enter key is pressed
+        
+        Button:
+            text: "Hesapla"
+            size_hint_x: 0.15
+            size_hint_y: None
+            height: dp(30)
+            background_color: 0.1, 0.5, 0.8, 1  # Blue button
+            color: 1, 1, 1, 1  # White text
+            on_release: root.calculate()
+        
+        Label:
+            text: ""
+            size_hint_x: 0.35
+            size_hint_y: None
+            height: dp(40)
+
+    ScrollView:
+        id: scroll_view
+        do_scroll_x: True
+        do_scroll_y: True
+        bar_width: dp(10)
+        bar_color: 0.5, 0.7, 0.9, 0.9  # Blue scroll bar
+        bar_inactive_color: 0.5, 0.7, 0.9, 0.5
+        canvas.before:
+            Color:
+                rgba: 0.9, 0.95, 1, 1  # Lighter blue background
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        height: table_layout.height  # Fix: Dynamically use GridLayout height
+        
+        GridLayout:
+            id: table_layout
+            cols: 1  # Ensure proper column structure
+            size_hint_y: None
+            height: table_layout.height  # Fix: Dynamically use GridLayout height
+            width: self.width  # Fix: Dynamically adjust based on table width
+            spacing: dp(0)  # Ensuring no gaps between cells
+            padding: dp(0)  # Removed extra padding to align columns
+
+<CellLabel@Label>:
+    size_hint_y: None
+    height: dp(40)
+    size_hint_x: None
+    width: table_layout.width  # Use dynamic width based on table
+    text_size: self.size
+    halign: 'center'
+    valign: 'middle'
+    color: 0, 0, 0.6, 1  # Dark blue text color
+    canvas.before:
+        Color:
+            rgba: 0.85, 0.9, 1, 1  # Light blue cell background
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 1, 1, 1, 1  # White border
+        Line:
+            width: 1.2  # Thinner border
+            rectangle: self.x, self.y, self.width, self.height
+
+<DisputeLabel@Label>:
+    size_hint_y: None
+    height: dp(40)
+    size_hint_x: None
+    width: table_layout.width  # Adjusted width to match table dynamically
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+    padding_x: dp(10)
+    color: 0, 0, 0.6, 1  # Dark blue text color
+    canvas.before:
+        Color:
+            rgba: 0.75, 0.85, 1, 1  # Darker blue cell background
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 1, 1, 1, 1  # White border
+        Line:
+            width: 1.2  # Thinner border
+            rectangle: self.x, self.y, self.width, self.height
