@@ -105,7 +105,7 @@ class MediationTimeGUI(BoxLayout):
         self.week_headers = []
         for week in self.calculator.get_all_weeks():
             header_week = Label(
-                text=f"Week {week}", 
+                text=f"{week}. Hafta", 
                 size_hint_x=None, width=dp(100),
                 size_hint_y=None, height=dp(40),
                 bold=True,
