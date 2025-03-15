@@ -4,14 +4,24 @@
 
 <MediationTimeGUI>:
     orientation: 'vertical'
-    padding: dp(10)
-    spacing: dp(10)
+    padding: dp(5)  # Reduced padding from 10 to 5
+    spacing: dp(5)  # Reduced spacing from 10 to 5
     canvas.before:
         Color:
             rgba: 0.8, 0.9, 1, 1  # Light blue background
         Rectangle:
             pos: self.pos
             size: self.size
+
+    # Title of the table at the top
+    Label:
+        text: "Arabuluculuk Süre Hesaplama Tablosu"
+        size_hint_y: None
+        height: dp(30)  # Reduced height from 40 to 30
+        font_size: dp(16)  # Reduced font size from 18 to 16
+        padding: [0, 0]  # No padding
+        bold: True
+        color: 0, 0, 0.6, 1  # Dark blue text
 
     # Main toolbar with date input and calculate button
     BoxLayout:
@@ -55,15 +65,6 @@
             text: ""
             size_hint_x: 0.35
     
-    # Title of the table
-    Label:
-        text: "Arabuluculuk Süre Hesaplama Tablosu"
-        size_hint_y: None
-        height: dp(30)
-        font_size: dp(16)
-        bold: True
-        color: 0, 0, 0.6, 1  # Dark blue text
-
     # Table container with scroll
     ScrollView:
         id: scroll_view
@@ -74,7 +75,7 @@
         bar_inactive_color: 0.5, 0.7, 0.9, 0.5
         canvas.before:
             Color:
-                rgba: 0.9, 0.95, 1, 1  # Lighter blue background
+                rgba: 0.9, 0.95, 1, 1  # Lighter blue background for table area
             Rectangle:
                 pos: self.pos
                 size: self.size
