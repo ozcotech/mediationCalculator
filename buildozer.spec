@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = Arabuluculuk Süre Hesaplama
+title = Arabuluculuk Hesaplama Araçları
 
 # (str) Package name
-package.name = medtime
+package.name = mediacalc
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.medtime
