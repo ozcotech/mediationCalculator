@@ -66,15 +66,15 @@
     BoxLayout:
         size_hint_y: None
         height: "40dp"
-        padding: 20, 0
+        padding: 5, 0
         
         Label:
-            text: "Makbuza Yazılacak"
+            text: "Makbuz Kalemleri"
             font_size: "16sp"
             color: 0, 0, 0.6, 1
             bold: True
-            size_hint_x: 0.4
-            halign: "left"
+            size_hint_x: 0.3
+            halign: "center"
             valign: "middle"
             text_size: self.size
             canvas.before:
@@ -90,7 +90,7 @@
             color: 0, 0, 0.6, 1
             bold: True
             size_hint_x: 0.3
-            halign: "right"
+            halign: "center"
             valign: "middle"
             text_size: self.size
             canvas.before:
@@ -106,7 +106,7 @@
             color: 0, 0, 0.6, 1
             bold: True
             size_hint_x: 0.3
-            halign: "right"
+            halign: "center"
             valign: "middle"
             text_size: self.size
             canvas.before:
@@ -123,3 +123,10 @@
         size_hint_y: 0.6
         padding: 20, 0, 20, 20
         spacing: 5
+        halign: "center"  # Added this line to center the numbers in the grid
+        canvas.before:
+            Color:
+                rgba: 0.8, 0.85, 1, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos

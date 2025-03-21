@@ -115,7 +115,7 @@ class InvoiceCalculator:
 
     def print_table(self):
         """Prints the invoice table in a structured format."""
-        print("\nMakbuza Yazılacak | Tüzel Kişi | Gerçek Kişi")
+        print("\nMakbuz Kalemleri | Tüzel Kişi | Gerçek Kişi")
         print("-" * 40)
         for key, (tuzel, gercek) in self.result.items():
             print(f"{key:<25} | {tuzel:,.2f} ₺ | {gercek:,.2f} ₺")

@@ -1,7 +1,11 @@
 from .calculator import InvoiceCalculator, CalculationOption
 
 def run_program():
-    """Run the program in a loop until the user chooses to exit."""
+    """Run the program in a loop until the user chooses to exit.
+    
+    This function handles user input for mediation fees, displays available calculation options,
+    performs the selected calculations, and formats the results for output. It also manages error
+    handling to ensure a smooth user experience."""
     while True:
         try:
             # Get user input for mediation fee
